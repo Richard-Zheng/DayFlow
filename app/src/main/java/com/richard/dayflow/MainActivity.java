@@ -1,14 +1,18 @@
 package com.richard.dayflow;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Bundle;
+import android.os.Handler;
 
 import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
 
-    MyImageView myImageView;
+    private static final int REFRESH_COMPLETE = 0X110;
+    private SwipeRefreshLayout mSwipeLayout;
+    public MyImageView myImageView;
 
     public void refreshImage() {
         Calendar calendar = Calendar.getInstance();
@@ -40,8 +44,35 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mSwipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_widget);
         myImageView = (MyImageView) findViewById(R.id.image_view);
-        //myImageView.setImageURL("https://img.owspace.com/Public/uploads/Download/2020/0303.jpg");
+
+        mSwipeLayout.setColorSchemeResources(R.color.colorAccent,R.color.colorPrimary);
+        mSwipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {//设置刷新监听器
+            @Override
+            public void onRefresh() {
+                refreshImage();
+                mSwipeLayout.setRefreshing(false);
+                /*
+                new Handler().postDelayed(new Runnable() {//模拟耗时操作
+                    @Override
+                    public void run() {
+                        refreshImage();
+                        mSwipeLayout.setRefreshing(false);//取消刷新
+                    }
+                },2000);
+
+                 */
+            }
+        });
+
+        mSwipeLayout.setRefreshing(true);
         refreshImage();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeLayout.setRefreshing(false);
+            }
+        },2000); // 延时1秒
     }
 }
