@@ -1,20 +1,43 @@
 package com.richard.dayflow;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.ImageView;
 
 import java.util.Calendar;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements DatePickerFragment.DateSetListener {
 
     private SwipeRefreshLayout mSwipeLayout;
     public ImageView mImageView;
     public CalendarPage mCalendarPage;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.pick_date:
+                DialogFragment newFragment = new DatePickerFragment();
+                newFragment.show(getSupportFragmentManager(), "datePicker");
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,5 +74,14 @@ public class MainActivity extends AppCompatActivity {
             mSwipeLayout.setRefreshing(false);
             }
         },2000); // 延时1秒
+    }
+
+    @Override
+    public void onDateSetListener(DialogFragment dialog, int year, int month, int dayOfMonth) {
+
+        mSwipeLayout.setRefreshing(true);
+        mCalendarPage.setDate(year, month + 1, dayOfMonth);
+        mCalendarPage.refreshImage(mImageView, this);
+        mSwipeLayout.setRefreshing(false);
     }
 }
