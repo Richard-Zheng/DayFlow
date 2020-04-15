@@ -5,6 +5,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
+import android.widget.ImageView;
 
 import java.util.Calendar;
 
@@ -12,32 +14,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int REFRESH_COMPLETE = 0X110;
     private SwipeRefreshLayout mSwipeLayout;
-    public MyImageView myImageView;
-
-    public void refreshImage() {
-        Calendar calendar = Calendar.getInstance();
-
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH) + 1;
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-        String fyear = year + "";
-        String fmonth = "";
-        if (month < 10) {
-            fmonth = "0" + month;
-        } else {
-            fmonth = month + "";
-        }
-        String fday = "";
-        if (day < 10) {
-            fday = "0" + day;
-        } else {
-            fday = day + "";
-        }
-
-        myImageView.setImageURL("https://img.owspace.com/Public/uploads/Download/" +
-                fyear + "/" + fmonth + fday + ".jpg");
-    }
+    public ImageView mImageView;
+    public CalendarPage mCalendarPage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,33 +23,31 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mSwipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_widget);
-        myImageView = (MyImageView) findViewById(R.id.image_view);
+        mImageView = (ImageView) findViewById(R.id.image_view);
+        mCalendarPage = new CalendarPage();
+
+        Calendar calendar = Calendar.getInstance();
+        int nowyear = calendar.get(Calendar.YEAR); //now year
+        int nowmonth = calendar.get(Calendar.MONTH) + 1; //now month
+        int nowday = calendar.get(Calendar.DAY_OF_MONTH); //now day
 
         mSwipeLayout.setColorSchemeResources(R.color.colorAccent,R.color.colorPrimary);
         mSwipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {//设置刷新监听器
             @Override
             public void onRefresh() {
-                refreshImage();
-                mSwipeLayout.setRefreshing(false);
-                /*
-                new Handler().postDelayed(new Runnable() {//模拟耗时操作
-                    @Override
-                    public void run() {
-                        refreshImage();
-                        mSwipeLayout.setRefreshing(false);//取消刷新
-                    }
-                },2000);
-
-                 */
+            mCalendarPage.refreshImage(mImageView, MainActivity.this);
+            mSwipeLayout.setRefreshing(false);
             }
         });
 
         mSwipeLayout.setRefreshing(true);
-        refreshImage();
+        //initialize calendar page
+        mCalendarPage.setDate(nowyear, nowmonth, nowday);
+        mCalendarPage.refreshImage(mImageView, this);
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                mSwipeLayout.setRefreshing(false);
+            mSwipeLayout.setRefreshing(false);
             }
         },2000); // 延时1秒
     }
