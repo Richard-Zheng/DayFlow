@@ -7,9 +7,9 @@ import com.bumptech.glide.Glide;
 
 public class CalendarPage {
 
-    public int year;
-    public int month;
-    public int day;
+    public static int year;
+    public static int month;
+    public static int day;
 
     public String formatYMD(int y, int m, int d) {
         String fyear = y + "";

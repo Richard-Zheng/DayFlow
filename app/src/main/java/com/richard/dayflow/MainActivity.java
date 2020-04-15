@@ -34,9 +34,25 @@ public class MainActivity extends AppCompatActivity implements DatePickerFragmen
             case R.id.pick_date:
                 DialogFragment newFragment = new DatePickerFragment();
                 newFragment.show(getSupportFragmentManager(), "datePicker");
+            case R.id.date_today:
+                setNowDate();
+                mCalendarPage.refreshImage(mImageView, this);
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public void setNowDate() {
+
+        //get date
+        Calendar calendar = Calendar.getInstance();
+        int nowyear = calendar.get(Calendar.YEAR);
+        int nowmonth = calendar.get(Calendar.MONTH) + 1;
+        int nowday = calendar.get(Calendar.DAY_OF_MONTH);
+
+        CalendarPage.year = nowyear;
+        CalendarPage.month = nowmonth;
+        CalendarPage.day = nowday;
     }
 
     @Override
@@ -58,15 +74,9 @@ public class MainActivity extends AppCompatActivity implements DatePickerFragmen
             }
         });
 
-        //get date
-        Calendar calendar = Calendar.getInstance();
-        int nowyear = calendar.get(Calendar.YEAR);
-        int nowmonth = calendar.get(Calendar.MONTH) + 1;
-        int nowday = calendar.get(Calendar.DAY_OF_MONTH);
-
         //initialize calendar page
+        setNowDate();
         mSwipeLayout.setRefreshing(true);
-        mCalendarPage.setDate(nowyear, nowmonth, nowday);
         mCalendarPage.refreshImage(mImageView, this);
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -80,7 +90,9 @@ public class MainActivity extends AppCompatActivity implements DatePickerFragmen
     public void onDateSetListener(DialogFragment dialog, int year, int month, int dayOfMonth) {
 
         mSwipeLayout.setRefreshing(true);
-        mCalendarPage.setDate(year, month + 1, dayOfMonth);
+        CalendarPage.year = year;
+        CalendarPage.month = month + 1;
+        CalendarPage.day = dayOfMonth;
         mCalendarPage.refreshImage(mImageView, this);
         mSwipeLayout.setRefreshing(false);
     }
