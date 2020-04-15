@@ -16,7 +16,7 @@ import android.widget.ImageView;
 
 import java.util.Calendar;
 
-public class MainActivity extends AppCompatActivity implements DatePickerFragment.DateSetListener {
+public class MainActivity extends AppCompatActivity implements DatePickerFragment.DateSetReturnListener {
 
     private SwipeRefreshLayout mSwipeLayout;
     public ImageView mImageView;
@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerFragmen
     }
 
     @Override
-    public void onDateSetListener(DialogFragment dialog, int year, int month, int dayOfMonth) {
+    public void onDateSetReturnListener(DialogFragment dialog, int year, int month, int dayOfMonth) {
 
         mSwipeLayout.setRefreshing(true);
         CalendarPage.year = year;
