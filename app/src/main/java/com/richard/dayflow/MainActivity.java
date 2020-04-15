@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.util.Calendar;
 
@@ -34,9 +35,11 @@ public class MainActivity extends AppCompatActivity implements DatePickerFragmen
             case R.id.pick_date:
                 DialogFragment newFragment = new DatePickerFragment();
                 newFragment.show(getSupportFragmentManager(), "datePicker");
+                return true;
             case R.id.date_today:
                 setNowDate();
                 mCalendarPage.refreshImage(mImageView, this);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -89,11 +92,23 @@ public class MainActivity extends AppCompatActivity implements DatePickerFragmen
     @Override
     public void onDateSetReturnListener(DialogFragment dialog, int year, int month, int dayOfMonth) {
 
-        mSwipeLayout.setRefreshing(true);
-        CalendarPage.year = year;
-        CalendarPage.month = month + 1;
-        CalendarPage.day = dayOfMonth;
-        mCalendarPage.refreshImage(mImageView, this);
-        mSwipeLayout.setRefreshing(false);
+        //get now date
+        Calendar calendar = Calendar.getInstance();
+        int nowyear = calendar.get(Calendar.YEAR);
+        int nowmonth = calendar.get(Calendar.MONTH) + 1;
+        int nowday = calendar.get(Calendar.DAY_OF_MONTH);
+
+        if (year < 2015 || (year == 2015 && month + 1 < 3)) {
+            Toast.makeText(this, "忌留念！", Toast.LENGTH_LONG).show();
+        } else if ((year > nowyear) || (year == nowyear && month + 1 > nowmonth) || (year == nowyear && month + 1 == nowmonth && dayOfMonth > nowday)) {
+            Toast.makeText(this, "宜期待！", Toast.LENGTH_LONG).show();
+        } else {
+            mSwipeLayout.setRefreshing(true);
+            CalendarPage.year = year;
+            CalendarPage.month = month + 1;
+            CalendarPage.day = dayOfMonth;
+            mCalendarPage.refreshImage(mImageView, this);
+            mSwipeLayout.setRefreshing(false);
+        }
     }
 }
